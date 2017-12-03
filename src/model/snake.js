@@ -2,12 +2,11 @@ import Model from './model';
 
 export default class Snake extends Model {
 
-  constructor(x, y, xMax, yMax, length) {
+  constructor(x, y, length) {
     super();
     this.setState({
       length,
       direction: 'D',
-      max: [xMax, yMax],
       body: Array(length).fill([x, y]),
     });
   }
@@ -43,22 +42,26 @@ export default class Snake extends Model {
     body.push(body[body.length - 1]);
   }
 
+  getSize() {
+    const { body } = this.getState();
+    return body.length;
+  }
+
   getNewHead() {
     const {
       direction,
       body: [[x, y]],
-      max: [xMax, yMax],
     } = this.getState();
 
     switch (direction) {
       case 'U':
-        return [x === 0 ? xMax : x - 1, y];
+        return [x - 1, y];
       case 'D':
-        return [x === xMax ? 0 : x + 1, y];
+        return [x + 1, y];
       case 'L':
-        return [x, y === 0 ? yMax : y - 1];
+        return [x, y - 1];
       case 'R':
-        return [x, y === yMax ? 0 : y + 1];
+        return [x, y + 1];
       default:
         throw Error(`'${direction}' is not a valid direction.`);
     }

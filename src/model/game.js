@@ -3,32 +3,39 @@ import Model from './model';
 import Board from './board';
 import Snake from './snake';
 
-const getRandom = (min, max) =>
-  Math.floor(Math.random() * (max - min + 1)) + min;
-
 export default class Game extends Model {
-  constructor(element, height, width) {
+  constructor({ element, height, width, onLoseGame, onWinGame }) {
     super();
 
-    const snake = new Snake(0, 0, height - 1, width - 1, 30);
+    const snake = new Snake(0, 0, 3);
     const board = new Board(height, width, snake);
     const fruit = this.getFruit({ height, width, snake });
 
     board.attach(element);
-    this.setState({ height, width, board, snake, fruit });
+    this.setState({
+      height, width,
+      board, snake, fruit,
+      onLoseGame, onWinGame,
+    });
   }
 
   getFruit({ height, width, snake } = this.getState()) {
-    let fruitIsInSnake = true;
-    let pos;
+    // Get a map of all values
+    const map = new Array(width).fill(null)
+      .map((a, x) => new Array(height).fill(null)
+        .map((b, y) => ({ x, y, valid: true })));
 
-    while (fruitIsInSnake) {
-      pos = [getRandom(0, width - 1), getRandom(0, height - 1)];
-      fruitIsInSnake = snake.getPosition()
-        .some(([x, y]) => x === pos[0] && y === pos[1]);
-    }
+    // Filter out pixels taken by the snake
+    snake.getPosition().forEach(([x, y]) => map[x][y].valid = false);
 
-    return pos;
+    // Flatten array and filter out unneeded
+    const coords = map
+      .reduce((arr, cols) => [...arr, ...cols])
+      .filter(i => i.valid);
+    const randomIdx = Math.floor(Math.random() * coords.length);
+    const pos = coords[randomIdx];
+
+    return [pos.x, pos.y];
   }
 
   setDirection(direction) {
@@ -42,24 +49,35 @@ export default class Game extends Model {
     });
   }
 
-  pause() {
-    const { interval } = this.getState();
+  loseGame(score) {
+    const { interval, onLoseGame } = this.getState();
     clearInterval(interval);
+    onLoseGame(score);
+  }
+
+  winGame() {
+    const { interval, onWinGame } = this.getState();
+    clearInterval(interval);
+    onWinGame();
   }
 
   render() {
     const state = this.getState();
-    const { board, snake } = state;
+    const { board, snake, height, width } = state;
     let { fruit } = state;
 
     snake.advance();
-
-    board.drawSnake(snake);
 
     // Detect if snake ate fruit
     const [head, ...body] = snake.getPosition();
     if (head[0] === fruit[0] && head[1] === fruit[1]) {
       snake.grow();
+
+      if (snake.getSize() === height * width) {
+        this.winGame();
+        return;
+      }
+
       // Get a new fruit
       fruit = this.getFruit();
       this.setState({ fruit });
@@ -67,13 +85,16 @@ export default class Game extends Model {
 
     board.drawFruit(fruit);
 
-    // Detect if snake collided with itself
-    const collision = body.some(part =>
+    // Detect if snake collided with itself, or walls
+    const selfCollision = body.some(part =>
       (part[0] === head[0] && part[1] === head[1]));
+    const wallCollision = head[0] < 0 || head[0] >= width
+      || head[1] < 0 || head[1] > height;
 
-    if (collision) {
-      this.pause();
-      alert('you lose!');
+    if (selfCollision || wallCollision) {
+      this.loseGame(snake.getSize());
+    } else {
+      board.drawSnake(snake);
     }
   }
 }

@@ -3,14 +3,28 @@ import './style.css';
 
 import Game from './model/game';
 
-// Initialize component
-document.addEventListener("DOMContentLoaded", () => {
-  const boardEl = document.createElement("div");
+const printText = (txt) => {
+  // Shitty DOM, I know
+  const textEl = document.createElement('p');
+  textEl.className = 'message-text';
+  textEl.textContent = txt
+  document.body.append(textEl);
+}
+
+const initialize = () => {
+  const boardEl = document.createElement('div');
   boardEl.className = 'board';
   document.body.append(boardEl);
 
-  const game = new Game(boardEl, 20, 20);
-  game.start();
+  const game = new Game({
+    element: boardEl,
+    width: 20,
+    height: 30,
+    onLoseGame: score =>
+      printText(`Oooops! you lose 😿. Your score is ${score}`),
+    onWinGame: () =>
+      printText('OMG you actually won!! 🙀'),
+  });
 
   // key handlers
   window.addEventListener('keydown', ({ key }) => {
@@ -32,5 +46,10 @@ document.addEventListener("DOMContentLoaded", () => {
         game.setDirection('R');
         break;
     }
-  })
-});
+  });
+
+  game.start();
+};
+
+// Initialize component
+document.addEventListener("DOMContentLoaded", initialize);
