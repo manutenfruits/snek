@@ -12,8 +12,19 @@ export default class Snake extends Model {
     });
   }
 
-  setDirection(direction) {
-    this.setState({ direction });
+  isHorizontal(direction) {
+    return ['L', 'R'].includes(direction);
+  }
+
+  setDirection(newDirection) {
+    // Ignore reverse direction, or same one
+    const wasHorizontal = this.isHorizontal(this.getState().direction);
+    const isHorizontal = this.isHorizontal(newDirection);
+
+    // Poor man's XOR
+    if (wasHorizontal ? !isHorizontal : isHorizontal) {
+      this.setState({ direction: newDirection });
+    }
   }
 
   getPosition() {
