@@ -52,7 +52,9 @@ export default class Board extends Model{
 
     // Draw new snake
     const newTiles = snake.getPosition().map(([x, y]) => board[x][y]);
-    newTiles.forEach(tile => tile.setSnake());
+    const [headTile, ...bodyTiles] = newTiles;
+    bodyTiles.forEach(tile => tile.setSnake())
+    headTile.setHead();
 
     this.setState({ snakeTiles: newTiles });
   }

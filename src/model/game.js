@@ -10,7 +10,7 @@ export default class Game extends Model {
   constructor(element, height, width) {
     super();
 
-    const snake = new Snake(0, 0, height - 1, width - 1, 3);
+    const snake = new Snake(0, 0, height - 1, width - 1, 30);
     const board = new Board(height, width, snake);
     const fruit = this.getFruit({ height, width, snake });
 
@@ -72,8 +72,8 @@ export default class Game extends Model {
       (part[0] === head[0] && part[1] === head[1]));
 
     if (collision) {
-      alert('you lose!');
       this.pause();
+      alert('you lose!');
     }
   }
 }

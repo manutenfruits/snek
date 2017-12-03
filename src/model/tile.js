@@ -3,6 +3,7 @@ import Model from './model';
 const getClassesFor = (mode) => ({
   EMPTY: 'tile',
   SNAKE: 'tile tile-snake',
+  HEAD: 'tile tile-head',
   FRUIT: 'tile tile-fruit',
 }[mode]);
 
@@ -29,7 +30,7 @@ export default class Tile extends Model {
   }
 
   isSnake() {
-    return this.getState().mode === 'SNAKE';
+    return ['SNAKE', 'HEAD'].includes(this.getState().mode);
   }
 
   isFruit() {
@@ -42,6 +43,10 @@ export default class Tile extends Model {
 
   setSnake() {
     this.setMode('SNAKE');
+  }
+
+  setHead() {
+    this.setMode('HEAD');
   }
 
   setFruit() {
