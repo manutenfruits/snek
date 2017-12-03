@@ -1,10 +1,14 @@
 # Snek
 
-Ugly but usable snake game.
+Ugly but usable snake game. [Try it out here!](https://manutenfruits.github.io/snek).
 
 ## Launching
 
 Just do `npm i` to install dependencies, and launch `npm start`. This will start a server on `localhost:8080`.
+
+## Building
+
+`npm build` will create a folder `dist` with the output.
 
 ## How to play
 

@@ -5,7 +5,12 @@
   "main": "app.js",
   "scripts": {
     "start": "webpack-dev-server",
-    "lint": "eslint src/*"
+    "lint": "eslint src/*",
+    "build": "webpack"
+  },
+  "repository": {
+    "type" : "git",
+    "url" : "https://github.com/manutenfruits/snek.git"
   },
   "author": "manutenfruits@gmail.com",
   "license": "MIT",
