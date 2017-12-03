@@ -3,14 +3,14 @@ import Model from './model';
 
 export default class Board extends Model{
 
-  constructor(height, width, snake) {
+  constructor(height, width) {
     super();
     // X goes left, Y goes down
     const board = new Array(width).fill(null)
       .map(() => new Array(height).fill(null)
         .map(() => new Tile()));
 
-    this.setState({ board, snake });
+    this.setState({ board, snakeTiles: [], fruitTile: null });
   }
 
   attach(boardEl) {
@@ -29,16 +29,31 @@ export default class Board extends Model{
     this.setState({ boardEl });
   }
 
-  render() {
-    const { snake, board } = this.getState();
+  drawFruit([x, y]) {
+    const { fruitTile, board } = this.getState();
+
+    if (fruitTile && fruitTile.isFruit()) {
+      // Wipe old fruit
+      fruitTile.wipe();
+    }
+
+    const tile = board[x][y];
+    tile.setFruit();
+    this.setState({ fruitTile: tile });
+  }
+
+  drawSnake(snake) {
+    const { snakeTiles, board } = this.getState();
 
     // Wipe snake from the board
-    const body = snake.getPosition();
-    body.forEach(([x, y]) => board[x][y].setEmpty());
+    snakeTiles
+      .filter(tile => tile.isSnake())
+      .forEach(tile => tile.wipe());
 
-    // Move snake forward, and draw again
-    snake.advance();
-    const newBody = snake.getPosition();
-    newBody.forEach(([x, y]) => board[x][y].setSnake());
+    // Draw new snake
+    const newTiles = snake.getPosition().map(([x, y]) => board[x][y]);
+    newTiles.forEach(tile => tile.setSnake());
+
+    this.setState({ snakeTiles: newTiles });
   }
 }

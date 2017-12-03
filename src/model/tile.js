@@ -28,7 +28,15 @@ export default class Tile extends Model {
     }
   }
 
-  setEmpty() {
+  isSnake() {
+    return this.getState().mode === 'SNAKE';
+  }
+
+  isFruit() {
+    return this.getState().mode === 'FRUIT';
+  }
+
+  wipe() {
     this.setMode('EMPTY');
   }
 

@@ -10,5 +10,9 @@
 }
 
 .tile-snake {
+  background-color: green;
+}
+
+.tile-fruit {
   background-color: red;
 }
