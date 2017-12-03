@@ -54,8 +54,10 @@ export default class Game extends Model {
 
     snake.advance();
 
+    board.drawSnake(snake);
+
     // Detect if snake ate fruit
-    const head = snake.getPosition()[0];
+    const [head, ...body] = snake.getPosition();
     if (head[0] === fruit[0] && head[1] === fruit[1]) {
       snake.grow();
       // Get a new fruit
@@ -64,6 +66,14 @@ export default class Game extends Model {
     }
 
     board.drawFruit(fruit);
-    board.drawSnake(snake);
+
+    // Detect if snake collided with itself
+    const collision = body.some(part =>
+      (part[0] === head[0] && part[1] === head[1]));
+
+    if (collision) {
+      alert('you lose!');
+      this.pause();
+    }
   }
 }
